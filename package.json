@@ -1,14 +1,14 @@
 {
-  "name": "cdn-vue",
+  "name": "cakephp-vuejs-integration",
   "version": "0.0.1",
-  "description": "Static js file using vuejs. The node project is setup only for linting purpose",
+  "description": "Static js file using vuejs. Mainly for using vuejs in old cakephp project. The node project is setup only for linting purpose",
   "main": "entry.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint --ext js,ts,tsx",
     "lint": "npm run eslint src"
   },
-  "author": "Anthony Wong",
+  "author": "shino369",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.37.0",

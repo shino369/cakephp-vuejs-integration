@@ -1,4 +1,4 @@
-# Guide To Use Vue.js in Currently CakePHP project (TMS Module Only)
+# Guide To Hybridly Use Vue.js in old CakePHP project
 ### vue version @3.2.36
 vue@3.2.36\
 minified
@@ -19,7 +19,7 @@ To enforce code style and reduce error, project is configured with ESlint and Pr
 <br>
 
 ## Entry Point
-To use vue.js in the project, you must use ctp file to serve as an entry point for receiving props. Call this in your view file:
+To hybridly use vue.js in cakephp project (consider it is generally an old project), you must use ctp file to serve as an entry point for receiving server-side props. We will use a ctp file `vue_component.ctp` to do it. Put the file into `/View/Elements/` directory, and call this in your view file:
 
 
 ```php
@@ -28,7 +28,7 @@ echo $this->element('vue_component',[
     'data' => $data,
     // pass necessary translation
     'translation' => [
-        'some_translate' => __d('tms', 'some_translate')
+        'some_translate' => __('some_translate')
     ],
     //not necessary. will random generate a unique selector if not provided.
     'selector' => $someUniqueSelector, 
@@ -43,17 +43,19 @@ echo $this->element('vue_component',[
 ]);
 ```
 
-All view and component files are located inside `Tms/webroot/js/vuejs/src/`.
-- `components` should be put to `Tms/webroot/js/vuejs/src/components/`
-- `views` should be put to `Tms/webroot/js/vuejs/src/views/`
+Then for that specific part you can use vue.js to develop.
+
+All view and component files should be located inside `/webroot/js/vuejs/src/`.
+- `components` should be put to `/webroot/js/vuejs/src/components/`
+- `views` should be put to `/webroot/js/vuejs/src/views/`
   
-A file mapping is declared in `vue_component.ctp` located in `Tms/View/Elements`.\
+A file mapping is declared in `vue_component.ctp` located in `View/Elements`.\
 See the following:
 
 ```php
 $importMapping = [
-    'ExtraPreferenceView' => '/tms/js/vuejs/src/views/extraPreference/ExtraPreferenceView.js',
-    'VueModalDialogComponent' => '/tms/js/vuejs/src/components/common/VueModalDialogComponent.js',
+    'ExtraPreferenceView' => '/js/vuejs/src/views/extraPreference/ExtraPreferenceView.js',
+    'VueModalDialogComponent' => '/js/vuejs/src/components/common/VueModalDialogComponent.js',
     ...
     // any newly added file must de added here
 ];
@@ -62,7 +64,7 @@ $importMapping = [
 You can also change to automatically find all available file by scanning the directory recursively:
 
 ```php
-// can recursively find all js file in '../Plugin/Tms/webroot/js/vuejs/src'
+// can recursively find all js file in '../webroot/js/vuejs/src'
 // but may cause performance impact ?
 $scanDeep = function ($rootPath, $recursive) {
     if ($handle = opendir($rootPath)) {
@@ -78,8 +80,8 @@ $scanDeep = function ($rootPath, $recursive) {
                     if (preg_match('/[A-Za-z0-9]+\.js/', $entry)) {
                         $entry = str_replace('.js', '', $entry);
                         $mapping[$entry] = str_replace(
-                            '../Plugin/Tms/webroot/js/vuejs/src',
-                            '/tms/js/vuejs/src',
+                            '../webroot/js/vuejs/src',
+                            '/js/vuejs/src',
                             $cur
                         );
                     }
@@ -91,16 +93,16 @@ $scanDeep = function ($rootPath, $recursive) {
     }
 };
 
-$importMapping =  $scanDeep('../Plugin/Tms/webroot/js/vuejs/src', $scanDeep);
+$importMapping =  $scanDeep('../webroot/js/vuejs/src', $scanDeep);
 ```
 
 The `vue_component.ctp` is predefined to include essential files
-- `Tms/webroot/js/vuejs/vue.global.prod.js` 
-- `Tms/webroot/js/vuejs/src/utils/commonUtils.js`
+- `/webroot/js/vuejs/vue.global.prod.js` 
+- `/webroot/js/vuejs/src/utils/commonUtils.js`
 
 The `commonUtils.js` is a small library to provid useful function like debounce / throttle... You can add your new function into it.
 
-After adding essential files to html head (once), The `vue_component.ctp` will add the components/views you stated to html head (once). It will then assign the necessary props passed by server to global window object, and call the `Tms/webroot/js/vuejs/entry.js`  in inline script.
+After adding essential files to html head (once), The `vue_component.ctp` will add the components/views you stated to html head (once). It will then assign the necessary props passed by server to global window object, and call the `/webroot/js/vuejs/entry.js`  in inline script.
 
 ```js
   // this will be called and add props to window, and will delete after component mounted
@@ -113,7 +115,7 @@ After adding essential files to html head (once), The `vue_component.ctp` will a
   };
 ```
 
-The `Tms/webroot/js/vuejs/entry.js` will read the props and initialize `vue.js`.
+The `/webroot/js/vuejs/entry.js` will read the props and initialize `vue.js`.
 
 <br>
 
