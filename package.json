@@ -1,0 +1,17 @@
+{
+  "name": "cdn-vue",
+  "version": "0.0.1",
+  "description": "Static js file using vuejs. The node project is setup only for linting purpose",
+  "main": "entry.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "eslint": "eslint --ext js,ts,tsx",
+    "lint": "npm run eslint src"
+  },
+  "author": "Anthony Wong",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.37.0",
+    "eslint-plugin-vue": "^9.10.0"
+  }
+}
