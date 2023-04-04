@@ -10,8 +10,39 @@ https://unpkg.com/vue@3.2.36/dist/vue.global.js
 official site
 https://vuejs.org/guide/quick-start.html
 
+
 To enforce code style and reduce error, project is configured with ESlint and Prettier by setting up a node project (only for linting, no other usage). Please run `npm i` or `yarn` and install corresponding VSCode extension.
 
+<br>
+
+---
+
+<br>
+
+## Introduction
+
+The main purpose of this project is to partially integrate `vue.js` into some very old `CakePHP` project already with a lot of view file using `jquery` and complex business logic. By applying this, you can partially include vuejs component along with your old code.
+
+For example:
+
+```php
+<?php
+// old php shit
+echo '<div id="shit">some</div>'
+    .'<div>shit</div>';
+?>
+<script>
+    // old jquery shit
+    $('#shit').click(() => {...})
+</script>
+
+<?php
+// entry point to use vuejs, see vue_component.ctp and entry.js for reference
+echo $this->element('vue_component',[
+        ... // props
+    ]);
+?>
+```
 <br>
 
 ---
