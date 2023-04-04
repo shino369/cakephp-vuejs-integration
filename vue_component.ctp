@@ -12,7 +12,7 @@
 $data = isset($data) ? $data : [];
 $translation = isset($translation) ? $translation : [];
 $essentials = [
-    /*'Vue' =>*/ '/js/vuejs/vue.global.prod.js',
+    /*'Vue' =>*/ '/js/vuejs/vue.global.prod.js',    // may directly use cdn serve https://unpkg.com/vue@3.2.36/dist/vue.global.prod.js
     /*'commonUtils' =>*/ '/js/vuejs/src/utils/commonUtils.js',
 ];
 
