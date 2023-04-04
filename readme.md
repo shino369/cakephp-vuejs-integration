@@ -161,7 +161,7 @@ In general cases, using `type="module"` will be easier to handle:
     import { componentA } from '../paths/ComponentA.js'
 </script>
 ```
-But does not like normal npm module which will compiled by webpack and adding postfix, directly import module file will have cache issue, you need to add version number to the end, like `../paths/ComponentA.js?v=12345` to get updated version. And it is quite dumb to add a timestamp manually. So all the js here we are using `type="text/javascript"`.
+But does not like normal npm module which will compiled by webpack and adding postfix, directly import module file will have cache issue, you need to add version number to the end, like `../paths/ComponentA.js?v=12345` to get updated version. And it is quite dumb to add a timestamp manually. So all the js here we are using `type="text/javascript"` so that cakephp can automatically add a timestamp to it. (a more modern method will be using `importmap` and declare all at once, but the browser support is still poor.)
 
 <br>
 
