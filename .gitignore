@@ -10,14 +10,12 @@ yarn.lock
 package-lock.json
 
 node_modules
+build
 .DS_Store
 dist
 dist-ssr
 coverage
 *.local
-
-/cypress/videos/
-/cypress/screenshots/
 
 # Editor directories and files
 .vscode/*

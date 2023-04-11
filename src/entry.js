@@ -4,8 +4,13 @@
     try {
         commonUtils.exec(() => {
             const { createApp } = Vue;
-            let { data, components, importMapping, uniqSelector, translation: _translate } =
-                vueReferenceProperty;
+            let {
+                data,
+                components,
+                importMapping,
+                uniqSelector,
+                translation: _translate,
+            } = vueReferenceProperty;
 
             if (!components || !components.length) {
                 throw new Error('No View or Component is imported.');

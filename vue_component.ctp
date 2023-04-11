@@ -16,10 +16,23 @@ $essentials = [
     /*'commonUtils' =>*/ '/js/vuejs/src/utils/commonUtils.js',
 ];
 
-$importMapping = [
-    'ExtraPreferenceView' => '/js/vuejs/src/views/extraPreference/ExtraPreferenceView.js',
-    'VueModalDialogComponent' => '/js/vuejs/src/components/common/VueModalDialogComponent.js',
-];
+// read mapping from constructed json
+$importMapping = [];
+$mapPath = '../webroot/js/vuejs/src/fileMapping.json';
+// $mapPath = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $mapPath);
+$handle = fopen($mapPath, "r");
+$contents = fread($handle, filesize($mapPath));
+fclose($handle);
+
+if (isset($contents)) {
+  $importMapping = json_decode($contents, true);
+}
+
+// if facing any problems, copy the mapping from the json directly
+// $importMapping = [
+//     'ExtraPreferenceView' => '/js/vuejs/src/views/extraPreference/ExtraPreferenceView.js',
+//     'VueModalDialogComponent' => '/js/vuejs/src/components/common/VueModalDialogComponent.js',
+// ];
 
 $compMap = [];
 $components = isset($components) ? $components : [];
@@ -53,7 +66,7 @@ $uniqSelector = isset($selector) && !empty($selector) ? $selector : $uniqSelecto
 </script>
 
 <?php
- echo $this->Html->script('/js/vuejs/entry.js', ['inline' => true, 'once' => false]);
+ echo $this->Html->script('/js/vuejs/src/entry.js', ['inline' => true, 'once' => false]);
 ?>
 
 <script>

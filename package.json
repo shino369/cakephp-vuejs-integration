@@ -2,16 +2,23 @@
   "name": "cakephp-vuejs-integration",
   "version": "0.0.1",
   "description": "Static js file using vuejs. Mainly for using vuejs in old cakephp project. The node project is setup only for linting purpose",
-  "main": "entry.js",
+  "main": "compiler.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "eslint": "eslint --ext js,ts,tsx",
-    "lint": "npm run eslint src"
+    "lint": "npm run eslint src",
+    "dev": "nodemon -e js,ts --watch src --exec \"npm run build\"",
+    "build": "node compiler.js"
   },
   "author": "shino369",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.10.0"
+  },
+  "dependencies": {
+    "minify": "^9.2.0",
+    "nodemon": "^2.0.22"
   }
 }

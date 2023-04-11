@@ -11,7 +11,9 @@ official site
 https://vuejs.org/guide/quick-start.html
 
 
-To enforce code style and reduce error, project is configured with ESlint and Prettier by setting up a node project (only for linting, no other usage). Please run `npm i` or `yarn` and install corresponding VSCode extension.
+To enforce code style and reduce error, project is configured with ESlint and Prettier by setting up a node project.\
+Please run `npm i` or `yarn` and install corresponding module, and install the above VScode extension.\
+To start development, run `npm run dev` or `yarn dev`. It will create minified js file and copy to the webroot path automatically on file change. Run `npm run build` or `yarn build` for building only.
 
 <br>
 
@@ -84,48 +86,21 @@ A file mapping is declared in `vue_component.ctp` located in `View/Elements`.\
 See the following:
 
 ```php
-$importMapping = [
-    'ExtraPreferenceView' => '/js/vuejs/src/views/extraPreference/ExtraPreferenceView.js',
-    'VueModalDialogComponent' => '/js/vuejs/src/components/common/VueModalDialogComponent.js',
-    ...
-    // any newly added file must de added here
-];
+// read mapping from constructed json
+$importMapping = [];
+$mapPath = '../webroot/js/vuejs/src/fileMapping.json';   // this json file is created by running yarn build in the vue project
+// $mapPath = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $mapPath);
+$handle = fopen($mapPath, "r");
+$contents = fread($handle, filesize($mapPath));
+fclose($handle);
+
+if (isset($contents)) {
+  $importMapping = json_decode($contents, true);
+}
 ```
 
-You can also change to automatically find all available file by scanning the directory recursively:
+In case of any error, chnage to use manual hardcode for mapping.
 
-```php
-// can recursively find all js file in '../webroot/js/vuejs/src'
-// but may cause performance impact ?
-$scanDeep = function ($rootPath, $recursive) {
-    if ($handle = opendir($rootPath)) {
-        $mapping = [];
-        $result = [];
-        while (false !== ($entry = readdir($handle))) {
-            if ($entry != "." && $entry != "..") {
-                $cur = $rootPath.'/'.$entry;
-                if (is_dir($cur)) {
-                    $result = array_merge($result, $recursive($cur, $recursive));
-                } else {
-                    // only include js file
-                    if (preg_match('/[A-Za-z0-9]+\.js/', $entry)) {
-                        $entry = str_replace('.js', '', $entry);
-                        $mapping[$entry] = str_replace(
-                            '../webroot/js/vuejs/src',
-                            '/js/vuejs/src',
-                            $cur
-                        );
-                    }
-                }
-            }
-        }
-        closedir($handle);
-        return array_merge($mapping, $result);
-    }
-};
-
-$importMapping =  $scanDeep('../webroot/js/vuejs/src', $scanDeep);
-```
 
 The `vue_component.ctp` is predefined to include essential files
 - `/webroot/js/vuejs/vue.global.prod.js` 
@@ -133,7 +108,7 @@ The `vue_component.ctp` is predefined to include essential files
 
 The `commonUtils.js` is a small library to provid useful function like debounce / throttle... You can add your new function into it.
 
-After adding essential files to html head (once), The `vue_component.ctp` will add the components/views you stated to html head (once). It will then assign the necessary props passed by server to global window object, and call the `/webroot/js/vuejs/entry.js`  in inline script.
+After adding essential files to html head (once), The `vue_component.ctp` will add the components/views you stated to html head (once). It will then assign the necessary props passed by server to global window object, and call the `/webroot/js/vuejs/src/entry.js`  in inline script.
 
 ```js
   // this will be called and add props to window, and will delete after component mounted
@@ -146,7 +121,7 @@ After adding essential files to html head (once), The `vue_component.ctp` will a
   };
 ```
 
-The `/webroot/js/vuejs/entry.js` will read the props and initialize `vue.js`.
+The `/webroot/js/vuejs/src/entry.js` will read the props and initialize `vue.js`.
 
 <br>
 
