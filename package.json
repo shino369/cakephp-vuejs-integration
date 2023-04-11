@@ -1,7 +1,7 @@
 {
   "name": "cakephp-vuejs-integration",
   "version": "0.0.1",
-  "description": "Static js file using vuejs. Mainly for using vuejs in old cakephp project. The node project is setup only for linting purpose",
+  "description": "Static js file using vuejs. Mainly for using vuejs in old cakephp project. The node project is setup for linting purpose and minify js file",
   "main": "compiler.js",
   "type": "module",
   "scripts": {
