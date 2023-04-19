@@ -1,16 +1,16 @@
 (function () {
     // global var
-    const { Vue, commonUtils, vueReferenceProperty } = window;
+    const { Vue, commonUtils } = window;
+    const { getProps } = commonUtils;
     try {
         commonUtils.exec(() => {
             const { createApp } = Vue;
             let {
                 data,
                 components,
-                importMapping,
                 uniqSelector,
-                translation: _translate,
-            } = vueReferenceProperty;
+                translation = {},
+            } = getProps();
 
             if (!components || !components.length) {
                 throw new Error('No View or Component is imported.');
@@ -20,6 +20,10 @@
                 // json_encode cannot return object if php return empty map
                 data = {};
             }
+
+            const t = (str) => {
+                return translation[str] || str;
+            };
 
             // define entry View
             let template = '';
@@ -37,32 +41,33 @@
                     throw new Error('More than one View is imported.');
                 }
 
-                template = `<${view[0]} :data="data" />`;
+                template = `<${view[0]} :data="data" :t="t" />`;
             }
 
             const app = createApp({
                 template,
-                setup: () => ({ data }),
+                setup: () => ({ data, t }),
             });
 
             // add components
             if (components.length > 0) {
                 components.forEach((comp) => {
-                    const funcComp = this[comp];
+                    const funcComp = commonUtils.getComp(comp);
 
                     if (!funcComp) {
-                        const available = Object.keys(importMapping).filter(
-                            (n) =>
-                                new RegExp(comp, 'i').test(n) ||
-                                new RegExp(n, 'i').test(comp),
-                        );
+                        // const available = Object.keys(importMapping).filter(
+                        //     (n) =>
+                        //         new RegExp(comp, 'i').test(n) ||
+                        //         new RegExp(n, 'i').test(comp),
+                        // );
                         throw new Error(
                             `Component or view [${comp}] not found. Perhaps a wrong filename. ${
-                                available.length
-                                    ? `Possible filename maybe: ${available.join(
-                                          ', ',
-                                      )}`
-                                    : ''
+                                ''
+                                // available.length
+                                //     ? `Possible filename maybe: ${available.join(
+                                //           ', ',
+                                //       )}`
+                                //     : ''
                             }`,
                         );
                     }

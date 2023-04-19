@@ -66,77 +66,48 @@ echo $this->element('vue_component',[
     //not necessary. will random generate a unique selector if not provided.
     'selector' => $someUniqueSelector, 
     'components' => [
-        // must include one (and only one) view file in the pattern of [filename]View to serve as entry point
-        'someView',
-        // components that will be used in [someView] must be included
-        'componentB',
-        'componentA', 
-        ...
+        // include one (and only one) view file in the pattern of [filename]View to serve as entry point
+        'someView'
     ],
 ]);
 ```
 
 Then for that specific part you can use vue.js to develop.
 
-All view and component files should be located inside `/webroot/js/vuejs/src/`.
-- `components` should be put to `/webroot/js/vuejs/src/components/`
-- `views` should be put to `/webroot/js/vuejs/src/views/`
+All view and component files are located inside `YOUR_DIR/Vuejs/src/`.
+- `components` should be put to `YOUR_DIR/Vuejs/src/components/`
+- `views` should be put to `YOUR_DIR/Vuejs/src/views/`
   
-A file mapping is declared in `vue_component.ctp` located in `View/Elements`.\
-See the following:
-
-```php
-// read mapping from constructed json
-$importMapping = [];
-$mapPath = '../webroot/js/vuejs/src/fileMapping.json';   // this json file is created by running yarn build in the vue project
-// $mapPath = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $mapPath);
-$handle = fopen($mapPath, "r");
-$contents = fread($handle, filesize($mapPath));
-fclose($handle);
-
-if (isset($contents)) {
-  $importMapping = json_decode($contents, true);
-}
-```
-
-In case of any error, chnage to use manual hardcode for mapping.
+A file mapping is declared in `vue_component.ctp` located in `View/Elements`.
 
 
 The `vue_component.ctp` is predefined to include essential files
 - `/webroot/js/vuejs/vue.global.prod.js` 
-- `/webroot/js/vuejs/src/utils/commonUtils.js`
+- `/webroot/js/vuejs/src/component.js`
 
-The `commonUtils.js` is a small library to provid useful function like debounce / throttle... You can add your new function into it.
+The `component.js` is a single file of the compiled version of your components. It will be genereated automatically.
 
-After adding essential files to html head (once), The `vue_component.ctp` will add the components/views you stated to html head (once). It will then assign the necessary props passed by server to global window object, and call the `/webroot/js/vuejs/src/entry.js`  in inline script.
+```php
+$essentials = [
+    /*'Vue' =>*/ '/js/vuejs/vue.global.prod.js',
+    /* 'component' =>*/ '/js/vuejs/src/component.js'
+];
+```
+
+After adding essential files to html head, The `vue_component.ctp` will add the components/views you stated to html head (once). It will then assign the necessary props passed by server to `commonUtils.setProps()`, and call the `/webroot/js/vuejs/src/entry.js`  in inline script.
 
 ```js
   // this will be called and add props to window, and will delete after component mounted
-  this.vueReferenceProperty = {
+  window.commonUtils && window.commonUtils.setProps({
     data: JSON.parse('<?php echo json_encode($data); ?>'),
     translation: JSON.parse('<?php echo json_encode($translation); ?>'),
     components: JSON.parse('<?php echo json_encode($components); ?>'),
-    importMapping: JSON.parse('<?php echo json_encode($importMapping); ?>'),
     uniqSelector: '#<?php echo $uniqSelector; ?>'
-  };
+  });
 ```
+
 
 The `/webroot/js/vuejs/src/entry.js` will read the props and initialize `vue.js`.
-
-<br>
-
----
-
-<br>
-
-## Vue.js Views/Components
-In general cases, using `type="module"` will be easier to handle:
-```html
-<script type="module">
-    import { componentA } from '../paths/ComponentA.js'
-</script>
-```
-But does not like normal npm module which will compiled by webpack and adding postfix, directly import module file will have cache issue, you need to add version number to the end, like `../paths/ComponentA.js?v=12345` to get updated version. And it is quite dumb to add a timestamp manually. So all the js here we are using `type="text/javascript"` so that cakephp can automatically add a timestamp to it. (a more modern method will be using `importmap` and declare all at once, but the browser support is still poor.)
 
 <br>
 
@@ -148,10 +119,14 @@ But does not like normal npm module which will compiled by webpack and adding po
 
 ```js
 // eslint-disable-next-line no-unused-vars
-var ComponentA = (function (exports) {  // must use a unique name to declare in global
+(function () {  // must use a unique name to declare in global
     'use strict';
     // global var
-    const { Vue } = window;
+    const { Vue, commonUtils } = window;
+    
+    if (!Vue || !commonUtils) {
+        throw new Error(`Vue.js and commonUtils.js not initialized.`);
+    }
 
     // template. the html comment use "es6-string-html" extemsion to style html str
     const templateStr = /*html*/ `
@@ -187,13 +162,24 @@ var ComponentA = (function (exports) {  // must use a unique name to declare in 
         },
     });
 
-    exports.ComponentA = ComponentA;
-    Object.defineProperty(exports, '__esModule', { value: true });
-    return exports;
-})({});
+    commonUtils.mount('ComponentA', { ComponentA });
+})();
 
 
 ```
 
+<br>
 
+---
+
+<br>
+
+## Future Dev
+In general cases, using `type="module"` will be easier to handle:
+```html
+<script type="module">
+    import { componentA } from '../paths/ComponentA.js'
+</script>
+```
+But does not like normal npm module which will compiled by webpack and adding postfix, directly import module file will have cache issue, you need to add version number to the end, like `../paths/ComponentA.js?v=12345` to get updated version. And it is quite dumb to add a timestamp manually. So all the js here we are using `type="text/javascript"` so that cakephp can automatically add a timestamp to it. (a more modern method will be using `importmap` and declare all at once, but the browser support is still poor.)
 
