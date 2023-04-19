@@ -145,6 +145,9 @@ The `/webroot/js/vuejs/src/entry.js` will read the props and initialize `vue.js`
             someProps: Object,
             someFunc: Function
         },
+        components: {
+            ...commonUtils.registerComponent(['SomeComponent']),
+        },
         setup(props) {
             const { ref, onMounted, computed } = Vue;
             const count = ref(0);
